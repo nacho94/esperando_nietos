@@ -17,7 +17,7 @@ void enforce(int n,char* msj) {
 
 }
 void nieto() {
-	
+	srand(getpid());
 	int numero = CalculaAleatorios(2,6);
 	printf("Soy el nieto %d, mi padre es %d , tengo que dormir %d segundos\n",getpid(),getppid(),numero);
 	sleep(numero);
