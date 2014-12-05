@@ -147,57 +147,12 @@ void abuelo() {
 		pause();
 		wait(&estado);
 	}
-	/*wait(&estado);
-		numero=WEXITSTATUS(estado);
-		printf("el medico dice= %d\n",numero );
-		padres();
-		printf("Abuelo: Mi pid es %d\n", getpid());
-		printf("Abuelo: mi padre es %d\n", getppid());*/
 }
 
 
 int main(void){
 	srand (time(NULL));
-	//padre();
 	abuelo();
-	/*int numero = 0;
- 	int i=0;
-	pid_t pid;
-	signal(SIGUSR1,manejador);
-	signal(SIGUSR2,manejador);
- 	pid=fork();
- 	if (pid==-1){
- 		perror("Error en la llamada a fork()");
- 		exit(0);
- 	} else if (pid == 0){
- 
-		pause();
-		sleep(1); 
-		printf("el medico comunica si esta disponible\n");
-		int i = CalculaAleatorios(0,1);
-		printf("i= %d\n", i);
 
-		switch(i) {
-			case 0:
-				kill(getppid(),SIGUSR1);
-				break;
-			case 1:
-				kill(getppid(),SIGUSR2);
-				break;
-
-		}
-
- 	} else {
- 
- 		printf("El abuelo comprueba si el medico esta disponible\n");
- 		sleep(1);
- 		kill(pid,SIGUSR1);
- 		pause();
- 
-		printf("El medico no esta disponible\n");
-
- 	}
- 
-*/
- return 0;
+ 	return 0;
 }
