@@ -57,65 +57,96 @@ void padre() {
 	}
 	
 }
-void manejador(int signo) {
+
+void manejador_medico(int s) {
+	printf("Soy el medico %d, y he recibido %d\n",getpid(),s);
+
+}
+
+void medico() {
+	signal(SIGUSR1,manejador_medico);
+	printf("Soy el medico %d, y esoty esperando por la señal del abuelo\n",getpid());
+	pause();
+	sleep(1); 
+	int i = CalculaAleatorios(0,1);
+	printf("Soy el medico %d, y el abuelo me ha despertado. %s estoy disponible\n",getpid(),i==0 ? "no" : "si");
+
+	switch(i) {
+		case 0:
+			kill(getppid(),SIGUSR1);
+			break;
+		case 1:
+			kill(getppid(),SIGUSR2);
+			break;
+
+	}
+
+}
+
+
+
+void padres(){
+	pid_t pid_padre; 
+	int i;
+	int estado;
+ 	int num_enfermos;
+ 	
+	for (i=0; i<2; i++) {
+		pid_padre = fork();
+		enforce(pid_padre,"no se han podido crear los padres");
+		if (pid_padre == 0) {
+			padre();
+		}
+	}
+	if(pid_padre!=0){
+
+		printf("Soy el abuelo %d, y estoy esperando por mis hijos y nietos\n",getpid());
+		pid_t p = wait(&estado);
+		while (p > 0) {
+			p = wait(&estado);
+			num_enfermos+=WEXITSTATUS(estado);
+				
+		}
+		printf("Soy el abuelo %d, y hay %d nietos enfermos\n",getpid(),num_enfermos);
+
+	}
 	
-	if(signo == SIGUSR1) {
+}
 
+void manejador_abuelo(int signo) {
 
-    printf("recibida SIGUSR1\n");
+	printf("Soy el abuelo %d, y he recibido %d\n",getpid(),signo);
 	
-	}else if(signo == SIGUSR2) {
-
-
-    printf("recibida SIGUSR2\n");
-	
- 	}
+	if(signo==SIGUSR1) {
+		printf("Soy el abuelo %d, el medico no esta disponible y no dejo salir a los nietos\n",getpid());
+	}
+	if(signo==SIGUSR2)  {
+		printf("Soy el abuelo %d, el medico si esta disponible y dejo salir a mis nietos\n",getpid());
+		padres();
+	}
   
 }
 
-void Crear_padres(){
-	pid_t ret; 
-	int i;
-	int estado;
- 	int numero;
- 	int contador=0;
-	for (i=0; i<2; i++) {
-		ret = fork();
-		if (ret == 0) {
-			/* estamos en alguno de los padres. */
-			switch(i) {
-				case 0:
-					/* tratamiento padre 1. */
-					printf("Padre1: Mi pid es %d\n", getpid());
-					printf("Padre1: mi padre es %d\n", getppid());
-					exit(1);
-				case 1:
-					/* tratamiento padre 2. */
-					printf("Padre2: Mi pid es %d\n", getpid());
-					printf("Padre2: mi padre es %d\n", getppid());
-					exit(2);
-			}
-		} else if (ret > 0) {
-			/* tratamiento del padre */
-			ret = wait(&estado);
-			while (ret > 0) {
-				ret = wait(&estado);
-				numero=WEXITSTATUS(estado);
-				contador=contador + numero;
-				printf("numero= %d\n", numero);
-				printf("contador= %d\n",contador);
-
-			}
-		} else if (ret == -1) {
-			perror("fallo en fork");
-			exit(EXIT_FAILURE);
-		}
-	}
-	
-	
-}
-
 void abuelo() {
+	printf("Soy el abuelo %d\n",getpid());
+	pid_t pid_medico;
+
+	pid_medico=fork();
+	enforce(pid_medico,"no se puede crear el medico");
+
+	if(pid_medico==0) {
+		medico();
+	}else {
+		printf("Soy el abuelo %d, y voy a pregunrle al medico %d si esta disponible\n",getpid(),pid_medico);
+		sleep(1);
+		int estado;
+		signal(SIGUSR1,manejador_abuelo);
+		signal(SIGUSR2,manejador_abuelo);
+		kill(pid_medico,SIGUSR1);
+
+		pause();
+		wait(&estado);
+	}
 	/*wait(&estado);
 		numero=WEXITSTATUS(estado);
 		printf("el medico dice= %d\n",numero );
@@ -127,8 +158,8 @@ void abuelo() {
 
 int main(void){
 	srand (time(NULL));
-	padre();
-	
+	//padre();
+	abuelo();
 	/*int numero = 0;
  	int i=0;
 	pid_t pid;
