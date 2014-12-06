@@ -44,11 +44,14 @@ void padre() {
 	if(pid_hijo!=0){
 
 		printf("Soy el padre %d, mi padre es %d, y estoy esperando por mis hijos\n",getpid(),getppid());
-		pid_t p = wait(&estado);
-		while (p > 0) {
-			p = wait(&estado);
+		int j=0;
+		while (pid_hijo> 0) {
+			pid_hijo = wait(&estado);
+			if(j==3){
+				break;
+			}
 			num_enfermos+=WEXITSTATUS(estado);
-				
+			j++;	
 		}
 		printf("Soy el padre %d, mi padre es %d, y hay %d hijos enfermos\n",getpid(),getppid(),num_enfermos);
 	
@@ -101,11 +104,14 @@ void padres(){
 	if(pid_padre!=0){
 
 		printf("Soy el abuelo %d, y estoy esperando por mis hijos y nietos\n",getpid());
-		pid_t p = wait(&estado);
-		while (p > 0) {
-			p = wait(&estado);
+		int j=0;
+		while (pid_padre > 0) {
+			pid_padre = wait(&estado);
+			if(j==3){
+				break;
+			}
 			num_enfermos+=WEXITSTATUS(estado);
-				
+			j++;	
 		}
 		printf("Soy el abuelo %d, y hay %d nietos enfermos\n",getpid(),num_enfermos);
 
