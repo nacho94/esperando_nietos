@@ -31,7 +31,8 @@ void padre() {
 	pid_t pid_hijo;
 	int estado;
 	int num_enfermos = 0;
-	for(int i=0; i<3; i++) {
+	int i;
+	for(i=0; i<3; i++) {
 		pid_hijo=fork();
 		
 		enforce(pid_hijo,"no se pueden crear los hijos");
@@ -92,7 +93,7 @@ void padres(){
 	pid_t pid_padre; 
 	int i;
 	int estado;
- 	int num_enfermos;
+ 	int num_enfermos=0;
  	
 	for (i=0; i<2; i++) {
 		pid_padre = fork();
